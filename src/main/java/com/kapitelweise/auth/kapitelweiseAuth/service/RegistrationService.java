@@ -32,7 +32,11 @@ public class RegistrationService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, ("Benutzername bereits vergeben"));
         }
 
-        if(request.getPassword().length() < 10){
+        if(request.getPassword() == null || request.getPassword().length() < 10){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ("ungültige Eingabe"));
+        }
+
+        if(request.getUsername() == null || request.getUsername().isBlank() || request.getUsername().length() > 50){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ("ungültige Eingabe"));
         }
         String hash = passwordEncoder.encode(request.getPassword());
