@@ -39,8 +39,7 @@ public class RegistrationService {
 
         try{
             AppUser user =  userDao.saveUser(new AppUser(request.getUsername(), hash));
-            // Nachricht geht noch innerhalb der Transaktion raus; scheitert danach der Commit, wäre das Backend inkonsistent.
-            // Saubere Lösung wäre eine Transactional Outbox, für uns reicht das Risiko aber.
+            // Nachricht geht noch innerhalb der Transaktion raus, scheitert danach der Commit, wäre das Backend inkonsistent.
             amazonSQSService.sendNewUser(EventType.USER_CREATED, user.getId(), user.getUsername());
 
             return new RegisterResponse(user.getId(), user.getUsername(), user.getCreated_at());
