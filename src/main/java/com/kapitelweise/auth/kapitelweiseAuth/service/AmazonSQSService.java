@@ -4,11 +4,15 @@ import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.kapitelweise.auth.kapitelweiseAuth.response.EventType;
 import com.kapitelweise.auth.kapitelweiseAuth.response.UserEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.json.JsonMapper;
 
 @Service
 public class AmazonSQSService {
+
+    private static final Logger log = LoggerFactory.getLogger(AmazonSQSService.class);
 
     private final AmazonSQS sqs;
     private final JsonMapper jsonMapper;
@@ -29,9 +33,10 @@ public class AmazonSQSService {
                     .withMessageGroupId(String.valueOf(userId))
                     .withMessageDeduplicationId(type + "-" + userId);
             sqs.sendMessage(send);
+            log.info(username + " ist in der Queue, die anderen Services wissen gleich Bescheid");
         } catch (Exception e) {
             // Registrierung soll nicht scheitern, nur weil die Queue nicht erreichbar ist
-            System.err.println("UserEvent konnte nicht gesendet werden: " + e.getMessage());
+            log.error("UserEvent für " + username + " konnte nicht gesendet werden, die anderen Services kennen ihn jetzt nicht: " + e.getMessage());
         }
     }
 }

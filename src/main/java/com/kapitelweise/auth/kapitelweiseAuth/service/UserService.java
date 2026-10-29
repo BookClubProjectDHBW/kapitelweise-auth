@@ -3,6 +3,8 @@ package com.kapitelweise.auth.kapitelweiseAuth.service;
 import java.util.Collections;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,6 +21,7 @@ import com.kapitelweise.auth.kapitelweiseAuth.domain.AppUser;
 
 @Service
 public class UserService implements UserDetailsService {
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private final UserDao userDao;
 
@@ -29,6 +32,7 @@ public class UserService implements UserDetailsService {
     private AppUser getUserFromUsername(String username) {
         Optional<AppUser> found = userDao.findByUsername(username);
         if (found.isEmpty()) {
+            log.warn(username + " will sich einloggen, kennen wir aber gar nicht");
             throw new UsernameNotFoundException("User not found");
         }
         return found.get();
